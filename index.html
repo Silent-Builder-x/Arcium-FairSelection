@@ -3,143 +3,228 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FairSelection Protocol | Arcium Demo</title>
+    <title>FairSelection Protocol | Arcium Ecosystem Demo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono&display=swap');
         
+        :root {
+            --primary: #3b82f6;
+            --accent: #8b5cf6;
+            --bg: #020617;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #020617;
+            background-color: var(--bg);
             color: #f8fafc;
+            overflow-x: hidden;
         }
+
         .mono { font-family: 'JetBrains+Mono', monospace; }
-        .gradient-border {
-            border: 1px solid transparent;
-            background: linear-gradient(#020617, #020617) padding-box,
-                        linear-gradient(45deg, #3b82f6, #8b5cf6) border-box;
+
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(51, 65, 85, 0.5);
         }
-        @keyframes pulse-soft {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.7; transform: scale(0.98); }
+
+        .gradient-text {
+            background: linear-gradient(45deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-        .mxe-node { animation: pulse-soft 2s infinite ease-in-out; }
+
+        .compute-glow {
+            filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.3));
+        }
+
+        @keyframes subtle-float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .float { animation: subtle-float 4s infinite ease-in-out; }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+        
+        .status-pulse {
+            animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+        }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center p-4 md:p-12">
+<body class="min-h-screen flex flex-col items-center">
+
+    <!-- Background Decorative Glows -->
+    <div class="fixed top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/10 blur-[120px] rounded-full pointer-events-none"></div>
+    <div class="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/10 blur-[120px] rounded-full pointer-events-none"></div>
 
     <!-- Header -->
-    <header class="w-full max-w-4xl flex justify-between items-center mb-12">
-        <div class="flex items-center gap-3">
-            <div class="bg-blue-600 p-2 rounded-xl shadow-lg shadow-blue-500/20">
-                <i class="fas fa-shield-halved text-white text-xl"></i>
+    <header class="w-full max-w-6xl px-6 py-10 flex justify-between items-center z-10">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-blue-600 rounded-2xl shadow-xl shadow-blue-500/20 flex items-center justify-center">
+                <i class="fas fa-shield-halved text-white text-2xl"></i>
             </div>
             <div>
-                <h1 class="text-xl font-bold tracking-tight">FairSelection <span class="text-blue-500 text-sm font-normal mono">v1.0</span></h1>
-                <p class="text-xs text-slate-500 uppercase tracking-widest font-semibold">FHE Resource Allocation Protocol</p>
+                <h1 class="text-2xl font-bold tracking-tight">FairSelection <span class="text-blue-500 font-normal mono text-base ml-1">v1.0</span></h1>
+                <p class="text-[10px] text-slate-500 uppercase tracking-[0.2em] font-black">FHE Confidential Resource Allocation</p>
             </div>
         </div>
-        <div class="px-4 py-1.5 bg-slate-900 border border-slate-800 rounded-full text-xs font-medium text-slate-400">
-            Powered by <span class="text-blue-400 font-bold">Arcium MXE</span>
+        <div class="hidden md:flex items-center gap-4">
+            <div class="flex flex-col items-end">
+                <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Infrastructure Status</span>
+                <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-green-500 status-pulse"></span>
+                    <span class="text-xs font-bold text-slate-300">Arcium Devnet Active</span>
+                </div>
+            </div>
         </div>
     </header>
 
-    <main class="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-5 gap-8">
+    <main class="w-full max-w-6xl px-6 grid grid-cols-1 lg:grid-cols-12 gap-10 z-10 mb-12">
         
-        <!-- Input Section -->
-        <div class="lg:col-span-2 space-y-6">
-            <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl backdrop-blur-sm">
-                <h2 class="text-sm font-bold text-slate-300 mb-6 uppercase tracking-wider flex items-center gap-2">
-                    <i class="fas fa-sliders text-blue-500"></i> Protocol Inputs
+        <!-- Left: Control & Parameters -->
+        <div class="lg:col-span-4 space-y-6">
+            <div class="glass-panel rounded-[2rem] p-8">
+                <h2 class="text-xs font-black text-slate-400 mb-8 uppercase tracking-[0.15em] flex items-center gap-2">
+                    <i class="fas fa-sliders-h text-blue-500"></i> Protocol Parameters
                 </h2>
                 
-                <div class="space-y-4">
+                <div class="space-y-6">
                     <div>
-                        <label class="block text-xs text-slate-500 mb-2 uppercase font-bold">Pool Capacity (Participants)</label>
-                        <input type="number" id="capacity" value="100" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:border-blue-500 outline-none transition mono">
+                        <div class="flex justify-between mb-2">
+                            <label class="text-[10px] text-slate-500 uppercase font-black tracking-widest">Pool Capacity</label>
+                            <span class="text-[10px] text-blue-400 mono">Candidates</span>
+                        </div>
+                        <input type="number" id="capacity" value="100" min="1" class="w-full bg-slate-950/50 border border-slate-800 rounded-xl px-4 py-4 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition mono text-white">
                     </div>
+
                     <div>
-                        <label class="block text-xs text-slate-500 mb-2 uppercase font-bold">Total Allocation Volume (SOL)</label>
-                        <input type="number" id="volume" value="50" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:border-blue-500 outline-none transition mono">
+                        <div class="flex justify-between mb-2">
+                            <label class="text-[10px] text-slate-500 uppercase font-black tracking-widest">Total Volume</label>
+                            <span class="text-[10px] text-blue-400 mono">SOL</span>
+                        </div>
+                        <input type="number" id="volume" value="50.00" step="0.01" class="w-full bg-slate-950/50 border border-slate-800 rounded-xl px-4 py-4 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition mono text-white">
                     </div>
-                    <button id="executeBtn" class="w-full bg-white text-slate-950 font-bold py-4 rounded-xl hover:bg-blue-50 transition active:scale-95 flex items-center justify-center gap-2">
-                        <i class="fas fa-microchip"></i>
-                        Request Secure Allocation
-                    </button>
+
+                    <div class="pt-2">
+                        <button id="executeBtn" class="w-full bg-white text-slate-950 font-black py-5 rounded-2xl hover:bg-blue-50 transition active:scale-[0.98] flex items-center justify-center gap-3 shadow-lg shadow-white/5 group">
+                            <i class="fas fa-microchip group-hover:rotate-12 transition-transform"></i>
+                            REQUEST ALLOCATION
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <div class="bg-blue-900/10 border border-blue-500/20 p-5 rounded-2xl flex gap-4">
-                <i class="fas fa-circle-info text-blue-400 mt-1"></i>
-                <p class="text-xs text-blue-200/60 leading-relaxed">
-                    All inputs are encrypted using FHE before leaving the browser. The Arcium nodes perform the selection on ciphertexts.
+            <div class="bg-indigo-600/5 border border-indigo-500/20 p-6 rounded-2xl space-y-3">
+                <div class="flex items-center gap-2 text-indigo-400">
+                    <i class="fas fa-shield-check text-sm"></i>
+                    <span class="text-[10px] font-black uppercase tracking-widest">Verification Node</span>
+                </div>
+                <p class="text-[11px] text-slate-500 leading-relaxed">
+                    Calculation is sharded across the Arcium MXE cluster. Selection results are verified homomorphically before being committed to the Solana ledger.
                 </p>
+                <div class="pt-2 font-mono text-[9px] text-slate-600 break-all">
+                    PID: FaAWo6F9CVDDD6eKyiHbhN7DKXWKrpFrutJMWr7XW7Zx
+                </div>
             </div>
         </div>
 
-        <!-- Visualization Section -->
-        <div class="lg:col-span-3">
-            <div class="gradient-border rounded-3xl p-8 h-full flex flex-col min-h-[400px]">
+        <!-- Right: Real-time Visualization -->
+        <div class="lg:col-span-8">
+            <div class="glass-panel rounded-[2.5rem] p-10 h-full flex flex-col min-h-[500px] relative overflow-hidden">
                 
-                <!-- Initial State -->
-                <div id="idleState" class="flex-1 flex flex-col items-center justify-center text-center space-y-4">
-                    <div class="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mb-2">
-                        <i class="fas fa-lock text-slate-500 text-xl"></i>
+                <!-- Idle State -->
+                <div id="idleState" class="flex-1 flex flex-col items-center justify-center text-center space-y-6">
+                    <div class="w-20 h-20 bg-slate-900/50 rounded-full flex items-center justify-center float">
+                        <i class="fas fa-fingerprint text-slate-700 text-3xl"></i>
                     </div>
-                    <h3 class="font-bold text-slate-400">Waiting for Request</h3>
-                    <p class="text-sm text-slate-600 max-w-xs">Configure parameters and trigger the confidential selection process.</p>
-                </div>
-
-                <!-- Computation State (Hidden by default) -->
-                <div id="computingState" class="hidden flex-1 flex flex-col items-center justify-center space-y-8">
-                    <div class="relative w-32 h-32">
-                        <div class="absolute inset-0 border-4 border-blue-500/10 rounded-full"></div>
-                        <div class="absolute inset-0 border-t-4 border-blue-500 rounded-full animate-spin"></div>
-                        <div class="absolute inset-0 flex items-center justify-center">
-                            <i class="fas fa-shield-halved text-blue-500 text-3xl animate-pulse"></i>
-                        </div>
-                    </div>
-                    <div class="text-center">
-                        <h3 class="font-bold text-blue-400 mb-2">MXE Confidential Computing...</h3>
-                        <p class="text-xs text-slate-500 font-mono" id="statusLog">Encrypting entropy seeds...</p>
+                    <div class="space-y-2">
+                        <h3 class="text-xl font-bold text-slate-300">Network Standby</h3>
+                        <p class="text-sm text-slate-500 max-w-sm mx-auto">Configure protocol inputs to trigger a confidential selection compute cycle on the Arcium network.</p>
                     </div>
                 </div>
 
-                <!-- Result State (Hidden by default) -->
-                <div id="resultState" class="hidden flex-1 flex flex-col">
-                    <h3 class="text-xs font-bold text-green-400 uppercase tracking-widest mb-6 flex items-center gap-2">
-                        <i class="fas fa-check-circle"></i> Allocation Finalized
-                    </h3>
-                    
-                    <div class="grid grid-cols-1 gap-4">
-                        <div class="bg-slate-950/50 p-6 rounded-2xl border border-slate-800">
-                            <p class="text-xs text-slate-500 mb-1">Selected Index</p>
-                            <p class="text-4xl font-black text-white mono" id="resIndex">--</p>
+                <!-- Computing State -->
+                <div id="computingState" class="hidden flex-1 flex flex-col items-center justify-center space-y-10">
+                    <div class="relative w-40 h-40">
+                        <div class="absolute inset-0 border-[6px] border-blue-500/5 rounded-full"></div>
+                        <div class="absolute inset-0 border-t-[6px] border-blue-500 rounded-full animate-spin"></div>
+                        <div class="absolute inset-0 flex items-center justify-center compute-glow">
+                            <i class="fas fa-bolt-lightning text-blue-400 text-4xl animate-pulse"></i>
                         </div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="bg-slate-950/50 p-4 rounded-2xl border border-slate-800">
-                                <p class="text-[10px] text-slate-500 mb-1 uppercase">Distributed Amount</p>
-                                <p class="text-lg font-bold text-blue-400 mono" id="resAmount">--</p>
+                    </div>
+                    <div class="text-center space-y-4">
+                        <h3 class="text-lg font-black text-white uppercase tracking-[0.2em]">MXE Processing</h3>
+                        <div class="bg-slate-950/80 px-6 py-2 rounded-full border border-slate-800">
+                            <p class="text-xs font-mono text-blue-400" id="statusLog">Initializing Arcis context...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Result State -->
+                <div id="resultState" class="hidden flex-1 flex flex-col justify-center animate-fadeIn">
+                    <div class="flex items-center gap-3 mb-8">
+                        <div class="w-8 h-8 bg-green-500/10 rounded-full flex items-center justify-center">
+                            <i class="fas fa-check text-green-500 text-xs"></i>
+                        </div>
+                        <h3 class="text-xs font-black text-green-400 uppercase tracking-widest">Allocation Finalized</h3>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="md:col-span-2 bg-slate-950/40 p-8 rounded-3xl border border-slate-800/50 flex justify-between items-center">
+                            <div>
+                                <p class="text-[10px] text-slate-500 uppercase font-black mb-1 tracking-widest">Selected Candidate Index</p>
+                                <p class="text-5xl font-black gradient-text mono" id="resIndex">--</p>
                             </div>
-                            <div class="bg-slate-950/50 p-4 rounded-2xl border border-slate-800">
-                                <p class="text-[10px] text-slate-500 mb-1 uppercase">Protocol Fee (0.1%)</p>
-                                <p class="text-lg font-bold text-purple-400 mono" id="resFee">--</p>
+                            <div class="text-right hidden sm:block">
+                                <i class="fas fa-award text-slate-800 text-6xl"></i>
                             </div>
+                        </div>
+                        
+                        <div class="bg-slate-950/40 p-6 rounded-3xl border border-slate-800/50">
+                            <p class="text-[10px] text-slate-500 uppercase font-black mb-1 tracking-widest">Distributed Net</p>
+                            <p class="text-2xl font-bold text-white mono" id="resAmount">--</p>
+                        </div>
+                        
+                        <div class="bg-slate-950/40 p-6 rounded-3xl border border-slate-800/50">
+                            <p class="text-[10px] text-slate-500 uppercase font-black mb-1 tracking-widest">Maintenance Fee (0.1%)</p>
+                            <p class="text-2xl font-bold text-purple-400 mono" id="resFee">--</p>
                         </div>
                     </div>
                     
-                    <button onclick="resetDemo()" class="mt-6 text-xs text-slate-500 hover:text-white transition uppercase tracking-widest font-bold">
-                        Perform New Selection
-                    </button>
+                    <div class="mt-10 pt-8 border-t border-slate-800/50 flex justify-between items-center">
+                        <button onclick="resetDemo()" class="text-[10px] font-black text-slate-500 hover:text-white transition uppercase tracking-[0.2em]">
+                            <i class="fas fa-redo-alt mr-2"></i> New Cycle
+                        </button>
+                        <div class="text-[9px] font-mono text-slate-600">
+                            MXE: EicCcGkRCvRWEXzRN2pKHvTfz33be6erxeCt8shDsHbX
+                        </div>
+                    </div>
                 </div>
 
             </div>
         </div>
     </main>
 
-    <footer class="mt-12 text-slate-600 text-[10px] uppercase tracking-[0.2em] font-bold">
-        Confidential Application Infrastructure Demo | Arcium Ecosystem
+    <footer class="w-full max-w-6xl px-6 py-12 flex flex-col md:flex-row justify-between items-center border-t border-slate-900 gap-6">
+        <p class="text-[10px] font-bold text-slate-600 uppercase tracking-[0.3em]">
+            FairSelection Protocol © 2026
+        </p>
+        <div class="flex gap-8">
+            <a href="#" class="text-slate-700 hover:text-blue-500 transition"><i class="fab fa-github"></i></a>
+            <a href="#" class="text-slate-700 hover:text-blue-500 transition"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="text-slate-700 hover:text-blue-500 transition"><i class="fas fa-file-alt"></i></a>
+        </div>
     </footer>
 
     <script>
@@ -150,19 +235,20 @@
         const statusLog = document.getElementById('statusLog');
 
         const logs = [
-            "Sharding entropy source...",
-            "Encrypting inputs via Arcis FHE...",
-            "Executing modulo selection logic in MXE...",
-            "Applying protocol fee calculus...",
-            "Aggregating node partial results...",
-            "Verifying zero-knowledge commitment..."
+            "Initializing Arcis FHE context...",
+            "Encrypting entropy source...",
+            "Distributing ciphertexts to nodes...",
+            "Executing homomorphic modulo logic...",
+            "Calculating maintenance residuals...",
+            "Aggregating node partial proofs...",
+            "Finalizing zero-knowledge verification..."
         ];
 
         executeBtn.addEventListener('click', () => {
             const capacity = parseInt(document.getElementById('capacity').value) || 100;
             const volume = parseFloat(document.getElementById('volume').value) || 0;
 
-            // UI Transitions
+            // Transition to Computing
             executeBtn.disabled = true;
             idleState.classList.add('hidden');
             resultState.classList.add('hidden');
@@ -172,10 +258,10 @@
             const logInterval = setInterval(() => {
                 statusLog.innerText = logs[logIndex];
                 logIndex++;
-                if(logIndex >= logs.length) clearInterval(logInterval);
-            }, 600);
+                if (logIndex >= logs.length) clearInterval(logInterval);
+            }, 500);
 
-            // Simulate MXE Calculation Delay
+            // Simulate Network Delay
             setTimeout(() => {
                 const fee = volume * 0.001;
                 const net = volume - fee;
@@ -188,7 +274,7 @@
                 computingState.classList.add('hidden');
                 resultState.classList.remove('hidden');
                 executeBtn.disabled = false;
-            }, 4000);
+            }, 3800);
         });
 
         function resetDemo() {
